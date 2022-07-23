@@ -55,6 +55,7 @@ class LeadType extends AbstractType
             $imageChoices = [
                 'Gravatar'                             => 'gravatar',
                 'mautic.lead.lead.field.custom_avatar' => 'custom',
+                'URL'                                  => 'url' // added by hamidreza to support url-based profile picture
             ];
 
             $cache = $options['data']->getSocialCache();
