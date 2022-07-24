@@ -1,0 +1,41 @@
+version: "3"
+
+services:
+
+  mautic:
+    container_name: mautic
+    image: mautic/mautic:v3-apache
+    volumes:
+      - ./data/mautic:/var/www/html
+      - .:/var/www/html/plugins/MauticSmsapiBundle
+    environment:
+      - MAUTIC_DB_HOST=database
+      - MAUTIC_DB_USER=root
+      - MAUTIC_DB_PASSWORD=mypassword
+      - MAUTIC_DB_NAME=mautic
+    restart: always
+    networks:
+      - mauticnet
+    ports:
+      - "8880:80"
+
+  database:
+    image: powertic/percona-docker
+    container_name: database
+    environment:
+      MYSQL_ROOT_PASSWORD: mypassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - database:/var/lib/mysql
+    restart: always
+    networks:
+      - mauticnet
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci --sql-mode=""
+
+
+volumes:
+  database:
+
+networks:
+  mauticnet:
