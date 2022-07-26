@@ -20,6 +20,7 @@ hooks:
   - exec: yes | ./.ddev/mautic-setup.sh
 webimage_extra_packages: [php7.4-imap]
 use_dns_when_possible: true
+timezone: Asia/Tehran
 composer_version: "2"
 web_environment: []
 nodejs_version: "16"
@@ -62,7 +63,7 @@ nodejs_version: "16"
 
 # webserver_type: nginx-fpm  # or apache-fpm
 
-timezone: Asia/Tehran
+# timezone: Europe/Berlin
 # This is the timezone used in the containers and by PHP;
 # it can be set to any valid timezone,
 # see https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
@@ -212,4 +213,3 @@ timezone: Asia/Tehran
 # information on the commands that can be extended and the tasks you can define
 # for them. Example:
 #hooks:
-

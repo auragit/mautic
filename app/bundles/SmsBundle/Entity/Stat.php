@@ -74,6 +74,18 @@ class Stat
      */
     private $isFailed = false;
 
+    /**
+     * @var int
+     * kavenegar messageid.
+     */
+    private $messageid;
+
+    /**
+     * @var \DateTime
+     * kavenegar reported delivery date.
+     */
+    private $dateDelivered;
+
     public static function loadMetadata(ORM\ClassMetadata $metadata)
     {
         $builder = new ClassMetadataBuilder($metadata);
@@ -83,7 +95,8 @@ class Stat
             ->addIndex(['sms_id', 'lead_id'], 'stat_sms_search')
             ->addIndex(['tracking_hash'], 'stat_sms_hash_search')
             ->addIndex(['source', 'source_id'], 'stat_sms_source_search')
-            ->addIndex(['is_failed'], 'stat_sms_failed_search');
+            ->addIndex(['is_failed'], 'stat_sms_failed_search')
+            ->addIndex(['messageid'], 'messageid_search');
 
         $builder->addBigIntIdField();
 
@@ -128,6 +141,16 @@ class Stat
             ->build();
 
         $builder->addField('details', 'json_array');
+
+        $builder->createField('messageid', 'integer')
+            ->columnName('messageid')
+            ->nullable()
+            ->build();
+
+        $builder->createField('dateDelivered', 'datetime')
+            ->columnName('date_delivered')
+            ->nullable()
+            ->build();
     }
 
     /**
@@ -150,6 +173,8 @@ class Stat
                     'lead',
                     'sms',
                     'details',
+                    'messageid',
+                    'dateDelivered'
                 ]
             )
             ->build();
@@ -382,6 +407,47 @@ class Stat
     public function addDetail($type, $detail)
     {
         $this->details[$type][] = $detail;
+
+        return $this;
+    }
+
+
+    /**
+     * @return \DateTime
+     */
+    public function getDateDelivered()
+    {
+        return $this->dateDelivered;
+    }
+
+    /**
+     * @param \DateTime $dateSent
+     *
+     * @return Stat
+     */
+    public function setDateDelivered($dateDelivered)
+    {
+        $this->dateDelivered = $dateDelivered;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMessageid()
+    {
+        return $this->messageid;
+    }
+
+    /**
+     * @param int $sourceId
+     *
+     * @return Stat
+     */
+    public function setMessageid($messageid)
+    {
+        $this->messageid = $messageid;
 
         return $this;
     }

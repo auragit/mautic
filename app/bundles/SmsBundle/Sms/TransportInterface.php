@@ -3,7 +3,7 @@
 namespace Mautic\SmsBundle\Sms;
 
 use Mautic\LeadBundle\Entity\Lead;
-
+use Mautic\SmsBundle\Entity\Stat;
 interface TransportInterface
 {
     /**
@@ -11,5 +11,5 @@ interface TransportInterface
      *
      * @return bool
      */
-    public function sendSms(Lead $lead, $content);
+    public function sendSms(Lead $lead, $content, Stat $stat);
 }
