@@ -78,7 +78,7 @@ class Stat
      * @var int
      * kavenegar messageid.
      */
-    private $messageid;
+    private $refid;
 
     /**
      * @var \DateTime
@@ -96,7 +96,7 @@ class Stat
             ->addIndex(['tracking_hash'], 'stat_sms_hash_search')
             ->addIndex(['source', 'source_id'], 'stat_sms_source_search')
             ->addIndex(['is_failed'], 'stat_sms_failed_search')
-            ->addIndex(['messageid'], 'messageid_search');
+            ->addIndex(['refid'], 'refid_search');
 
         $builder->addBigIntIdField();
 
@@ -142,8 +142,8 @@ class Stat
 
         $builder->addField('details', 'json_array');
 
-        $builder->createField('messageid', 'integer')
-            ->columnName('messageid')
+        $builder->createField('refid', 'integer')
+            ->columnName('refid')
             ->nullable()
             ->build();
 
@@ -173,7 +173,7 @@ class Stat
                     'lead',
                     'sms',
                     'details',
-                    'messageid',
+                    'refid',
                     'dateDelivered'
                 ]
             )
@@ -435,19 +435,19 @@ class Stat
     /**
      * @return int
      */
-    public function getMessageid()
+    public function geRefid()
     {
-        return $this->messageid;
+        return $this->refid;
     }
 
     /**
-     * @param int $sourceId
+     * @param int $refid
      *
      * @return Stat
      */
-    public function setMessageid($messageid)
+    public function setRefid($refid)
     {
-        $this->messageid = $messageid;
+        $this->refid = $refid;
 
         return $this;
     }
