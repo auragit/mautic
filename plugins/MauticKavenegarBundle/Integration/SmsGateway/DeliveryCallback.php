@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use MauticPlugin\MauticKavenegarBundle\Integration\SmsGateway\Configuration;
 
-class ReplyCallback implements CallbackInterface
+class DeliveryCallback implements CallbackInterface
 {
     /**
      * @var ContactHelper
@@ -38,9 +38,9 @@ class ReplyCallback implements CallbackInterface
     {
         $path = $this->configuration->getPublicApiPath();
         if (isset($path)) {
-            return "kavenegar-${path}";
+            return "kavenegar-delivery-${path}";
         } else {
-            return 'kavenegar';
+            return 'kavenegar-delivery';
         }
     }
 
@@ -51,11 +51,11 @@ class ReplyCallback implements CallbackInterface
      */
     public function getContacts(Request $request)
     {
-        $this->validateRequest($request->request);
+        // $this->validateRequest($request->request);
 
-        $number = $request->get('from');
+        // $number = $request->get('from');
 
-        return $this->contactHelper->findContactsByNumber($number);
+        // return $this->contactHelper->findContactsByNumber($number);
     }
 
     /**
@@ -63,15 +63,15 @@ class ReplyCallback implements CallbackInterface
      */
     public function getMessage(Request $request)
     {
-        $this->validateRequest($request->request);
+        // $this->validateRequest($request->request);
 
-        return trim($request->get('message'));
+        // return trim($request->get('message'));
     }
 
     private function validateRequest(ParameterBag $request)
     {
 
-        // error_log(print_r($request, true));
+        error_log(print_r($request, true));
         // try {
         //     $accountSid = $this->configuration->getAccountSid();
         // } catch (ConfigurationException $exception) {

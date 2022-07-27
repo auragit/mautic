@@ -4,6 +4,14 @@ namespace MauticPlugin\MauticKavenegarBundle;
 
 return [
     'version' => '1.0.0',
+    'routes' => [
+        'public' => [
+            'mautickavenegar.delivery.endpoint' => [
+                'path'       => '/kavenegar/delivery',
+                'controller' => 'MauticKavenegarBundle:Api\Delivery:deliver',
+            ],
+        ]
+    ],
     'services' => [
         'events' => [
             'mautic_integration.mautickavenegar.service.sms.subscriber.stop' => [
