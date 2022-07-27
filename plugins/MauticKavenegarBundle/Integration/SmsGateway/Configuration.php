@@ -105,18 +105,7 @@ class Configuration
         //     return;
         // }
 
-        $i = $this->integrationHelper->getIntegrationObjects();
-
-        foreach ($i as $k) {
-            error_log("an integ: ".get_class($k));
-        }
-
         $integration = $this->integrationHelper->getIntegrationObject(MauticKavenegarIntegration::NAME);
-
-        // $koofte = $integration->getIntegrationSettings()->getIsPublished();
-
-        error_log("issett: ".MauticKavenegarIntegration::NAME);
-
 
         if (!$integration || !$integration->getIntegrationSettings()->getIsPublished()) {
             throw new SmsGatewayException("shittt");

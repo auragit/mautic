@@ -333,9 +333,7 @@ class SmsModel extends FormModel implements AjaxLookupModelInterface
                         'content' => $tokenEvent->getContent(),
                     ];
 
-                    error_log("transport ".get_class($this->transport));
                     $refid = $this->transport->sendSms($lead, $tokenEvent->getContent(), $stat);
-                    error_log("sms sent with ".$refid);
 
                     if (-1 === $refid) {
                         $sendResult['status'] = $refid;

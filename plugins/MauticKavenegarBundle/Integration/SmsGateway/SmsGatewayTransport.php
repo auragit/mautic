@@ -19,7 +19,6 @@ class SmsGatewayTransport implements TransportInterface
         LoggerInterface $logger,
         MessageService $messageService
     ) {
-        error_log("salammm dada");
         $this->logger = $logger;
         $this->messageService = $messageService;
     }

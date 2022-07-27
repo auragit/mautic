@@ -2,23 +2,48 @@
 
 namespace MauticPlugin\MauticKavenegarBundle;
 
+/**
+ * DELIVERY ENDPOINT IS: https://mautic.ddev.site/kavenegar/delivery/<PUBLIC_API_PATH>
+ * REPLY ENDPOINT IS: https://mautic.ddev.site/sms/kavenegar-<PUBLIC_API_PATH>/callback
+ * 
+ * 
+ *  don't blame me for reply endpoint, I'm using native SMSbundle's callback interface. I could however, re-implement it, but it's only about the endpoint structure so I leave it as is for now. does not differ in performance /quality.
+ */
 return [
     'version' => '1.0.0',
     'routes' => [
         'public' => [
             'mautickavenegar.delivery.endpoint' => [
-                'path'       => '/kavenegar/delivery',
-                'controller' => 'MauticKavenegarBundle:Api\Delivery:deliver',
+                'path'       => '/kavenegar/delivery/{path}',
+                'controller' => 'MauticKavenegarBundle:Api\Delivery:deliver', //this uses the controller we have in service section. (because we need DI)
             ],
         ]
     ],
     'services' => [
+        'controllers' => [
+            'mautickavenegar.delivery.controller' => [
+                'class'     => Controller\Api\DeliveryController::class, // \Mautic\SmsBundle\Controller\ReplyController::class,
+                'arguments' => [
+                    'mautic.mautickavenegar.configuration',
+                    'mautic.sms.repository.stat',
+                    'mautic.lead.repository.lead_event_log',
+                ],
+            ],
+        ],
         'events' => [
             'mautic_integration.mautickavenegar.service.sms.subscriber.stop' => [
                 'class'     =>  Integration\EventListener\StopSubscriber::class,
                 'arguments' => [
                     'mautic.lead.model.dnc',
                     'mautic.mautickavenegar.configuration',
+                ],
+            ],
+            'mautic_integration.mautickavenegar.service.sms.subscriber.timeline' => [
+                'class'     => Integration\EventListener\TimelineSubscriber::class,
+                'arguments' => [
+                    'translator',
+                    'mautic.lead.repository.lead_event_log',
+                    'mautic.sms.repository.stat',
                 ],
             ],
         ],

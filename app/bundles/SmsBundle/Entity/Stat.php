@@ -435,7 +435,7 @@ class Stat
     /**
      * @return int
      */
-    public function geRefid()
+    public function getRefid()
     {
         return $this->refid;
     }

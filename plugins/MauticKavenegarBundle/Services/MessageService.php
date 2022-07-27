@@ -31,7 +31,6 @@ class MessageService
         Configuration $configuration,
         LoggerInterface $logger
     ) {
-        error_log(get_class($configuration));
         $this->httpClient = $client;
         $this->configuration = $configuration;
         $this->logger = $logger;
@@ -45,23 +44,10 @@ class MessageService
 
         try {
 
-            error_log("i am hererer");
-
             $apikey = $this->configuration->getApiKey();
-
-            error_log("apikey" . $apikey);
-
             $fromnumber = $this->configuration->getFromNumber();
-
-            error_log("fromnumber" . $fromnumber);
-
             $url = "https://api.kavenegar.com/v1/" . $apikey . "/sms/send.json?receptor=" . $leadPhoneNumber . "&message=" . $msg . "&sender=" . $fromnumber;
-
-            error_log("url is" . $url);
-
             $response =  $this->httpClient->sendRequest(new Request('GET', $url));
-
-            error_log($response->getBody()->getContents());
 
             if (!in_array($response->getStatusCode(), [Response::HTTP_OK, Response::HTTP_CREATED])) {
                 $this->logger->error('sms_gateway.send', [
