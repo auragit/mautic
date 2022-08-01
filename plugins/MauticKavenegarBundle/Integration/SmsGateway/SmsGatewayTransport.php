@@ -36,7 +36,7 @@ class SmsGatewayTransport implements TransportInterface
     public function contentTokenReplace(Lead $lead, string $content)
     {
         $tokens = array_merge(
-            TokenHelper::findLeadTokens($content, $lead->getProfileFields()),
+            TokenHelper::findLeadTokens($content, $lead->getProfileFields())
         );
 
         return str_replace(array_keys($tokens), array_values($tokens), $content);

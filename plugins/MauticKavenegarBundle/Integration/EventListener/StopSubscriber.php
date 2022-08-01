@@ -30,7 +30,7 @@ class StopSubscriber implements EventSubscriberInterface
     public function __construct(
         DoNotContactModel $doNotContactModel,
         Configuration $configuration,
-        MessageService $messageService,
+        MessageService $messageService
     ) {
         $this->doNotContactModel = $doNotContactModel;
         $this->configuration = $configuration;

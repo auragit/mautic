@@ -31,8 +31,7 @@ class TimelineSubscriber implements EventSubscriberInterface
      */
     public function __construct(TranslatorInterface $translator,
      LeadEventLogRepository $eventLogRepository,
-     StatRepository $statRepository,
-    //  SmsRepository $smsRepository,
+     StatRepository $statRepository
      )
     {
         $this->translator         = $translator;
