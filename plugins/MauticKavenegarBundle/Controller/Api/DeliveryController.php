@@ -42,7 +42,7 @@ class DeliveryController extends AbstractController
     public function __construct(
         Configuration $configuration,
         StatRepository $statRepository,
-        LeadEventLogRepository $leadEventLogRepository,
+        LeadEventLogRepository $leadEventLogRepository
     ) {
         $this->configuration = $configuration;
         $this->statRepository = $statRepository;
