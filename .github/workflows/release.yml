@@ -8,7 +8,7 @@ jobs:
   release:
     name: Create draft release
     runs-on: ubuntu-latest
-    if: github.repository == 'mautic/mautic'
+    if: github.repository == 'auragit/mautic'
 
     outputs:
       mautic-version: ${{ steps.get-mautic-version.outputs.version }}
