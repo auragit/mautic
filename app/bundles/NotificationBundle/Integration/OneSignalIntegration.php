@@ -59,6 +59,7 @@ class OneSignalIntegration extends AbstractIntegration
             'safari_web_id' => 'mautic.notification.config.form.notification.safari_web_id',
             'rest_api_key'  => 'mautic.notification.config.form.notification.rest_api_key',
             'gcm_sender_id' => 'mautic.notification.config.form.notification.gcm_sender_id',
+            'send_push_endpoint' => 'mautic.notification.config.form.notification.send_push_endpoint'
         ];
     }
 

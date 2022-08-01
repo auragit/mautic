@@ -92,6 +92,8 @@ class AvatarHelper extends Helper
                     true
                 );
             }
+        } else if ('url' == $preferred && null !== $lead->getFieldValue('propic')) { // added by hamidreza to support url-based profile picture
+            $img = $lead->getFieldValue('propic');
         } elseif (isset($socialData[$preferred]) && !empty($socialData[$preferred]['profile']['profileImage'])) {
             $img = $socialData[$preferred]['profile']['profileImage'];
         }

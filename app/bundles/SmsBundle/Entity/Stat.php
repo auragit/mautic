@@ -74,6 +74,18 @@ class Stat
      */
     private $isFailed = false;
 
+    /**
+     * @var int
+     * kavenegar messageid.
+     */
+    private $refid;
+
+    /**
+     * @var \DateTime
+     * kavenegar reported delivery date.
+     */
+    private $dateDelivered;
+
     public static function loadMetadata(ORM\ClassMetadata $metadata)
     {
         $builder = new ClassMetadataBuilder($metadata);
@@ -83,7 +95,8 @@ class Stat
             ->addIndex(['sms_id', 'lead_id'], 'stat_sms_search')
             ->addIndex(['tracking_hash'], 'stat_sms_hash_search')
             ->addIndex(['source', 'source_id'], 'stat_sms_source_search')
-            ->addIndex(['is_failed'], 'stat_sms_failed_search');
+            ->addIndex(['is_failed'], 'stat_sms_failed_search')
+            ->addIndex(['refid'], 'refid_search');
 
         $builder->addBigIntIdField();
 
@@ -128,6 +141,16 @@ class Stat
             ->build();
 
         $builder->addField('details', 'json_array');
+
+        $builder->createField('refid', 'integer')
+            ->columnName('refid')
+            ->nullable()
+            ->build();
+
+        $builder->createField('dateDelivered', 'datetime')
+            ->columnName('date_delivered')
+            ->nullable()
+            ->build();
     }
 
     /**
@@ -150,6 +173,8 @@ class Stat
                     'lead',
                     'sms',
                     'details',
+                    'refid',
+                    'dateDelivered'
                 ]
             )
             ->build();
@@ -382,6 +407,47 @@ class Stat
     public function addDetail($type, $detail)
     {
         $this->details[$type][] = $detail;
+
+        return $this;
+    }
+
+
+    /**
+     * @return \DateTime
+     */
+    public function getDateDelivered()
+    {
+        return $this->dateDelivered;
+    }
+
+    /**
+     * @param \DateTime $dateSent
+     *
+     * @return Stat
+     */
+    public function setDateDelivered($dateDelivered)
+    {
+        $this->dateDelivered = $dateDelivered;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getRefid()
+    {
+        return $this->refid;
+    }
+
+    /**
+     * @param int $refid
+     *
+     * @return Stat
+     */
+    public function setRefid($refid)
+    {
+        $this->refid = $refid;
 
         return $this;
     }

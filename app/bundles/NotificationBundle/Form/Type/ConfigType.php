@@ -133,6 +133,19 @@ class ConfigType extends AbstractType
                 ],
             ]
         );
+
+        $builder->add(
+            'send_push_endpoint',
+            TextType::class,
+            [
+                'label' => 'mautic.notification.config.form.notification.send_push_endpoint',
+                'data'  => $options['data']['send_push_endpoint'],
+                'attr'  => [
+                    'class'        => 'form-control',
+                    'data-show-on' => '{"config_notificationconfig_notification_enabled_1":"checked"}',
+                ],
+            ]
+        );
     }
 
     /**
