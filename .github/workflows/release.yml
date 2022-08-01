@@ -16,7 +16,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-      # Our build script needs access to all previous tags, so we add fetch-depth: 0
+      # Our build script needs access to all previous tags, so we add fetch-depth: 0 
       with:
         fetch-depth: 0
     
