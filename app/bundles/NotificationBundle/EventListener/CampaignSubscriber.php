@@ -14,6 +14,7 @@ use Mautic\NotificationBundle\Form\Type\MobileNotificationSendType;
 use Mautic\NotificationBundle\Form\Type\NotificationSendType;
 use Mautic\NotificationBundle\Model\NotificationModel;
 use Mautic\NotificationBundle\NotificationEvents;
+use Mautic\NotificationBundle\Service\AuraPushService;
 use Mautic\PluginBundle\Helper\IntegrationHelper;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -26,18 +27,22 @@ class CampaignSubscriber implements EventSubscriberInterface
     private EventDispatcherInterface $dispatcher;
     private DoNotContactModel $doNotContact;
 
+    private AuraPushService $auraPushService;
+
     public function __construct(
         IntegrationHelper $integrationHelper,
         NotificationModel $notificationModel,
         AbstractNotificationApi $notificationApi,
         EventDispatcherInterface $dispatcher,
-        DoNotContactModel $doNotContact
+        DoNotContactModel $doNotContact,
+        AuraPushService $auraPushService
     ) {
         $this->integrationHelper = $integrationHelper;
         $this->notificationModel = $notificationModel;
         $this->notificationApi   = $notificationApi;
         $this->dispatcher        = $dispatcher;
         $this->doNotContact      = $doNotContact;
+        $this->auraPushService   = $auraPushService;
     }
 
     /**
@@ -120,6 +125,7 @@ class CampaignSubscriber implements EventSubscriberInterface
 
         // If lead has subscribed on multiple devices, get all of them.
         /** @var \Mautic\NotificationBundle\Entity\PushID[] $pushIDs */
+        /*
         $pushIDs = $lead->getPushIDs();
 
         $playerID = [];
@@ -141,6 +147,12 @@ class CampaignSubscriber implements EventSubscriberInterface
         if (empty($playerID)) {
             return $event->setFailed('mautic.notification.campaign.failed.not_subscribed');
         }
+        */
+
+        $isMobile = $event->checkContext('notification.send_mobile_notification');
+        $isWeb = $event->checkContext('notification.send_notification');
+
+        $cid = $lead->getFieldValue('cid');
 
         if ($url = $notification->getUrl()) {
             $url = $this->notificationApi->convertToTrackedUrl(
@@ -152,6 +164,8 @@ class CampaignSubscriber implements EventSubscriberInterface
                 $notification
             );
         }
+
+
 
         /** @var TokenReplacementEvent $tokenEvent */
         $tokenEvent = $this->dispatcher->dispatch(
@@ -175,15 +189,19 @@ class CampaignSubscriber implements EventSubscriberInterface
         $sendNotification->setMessage($sendEvent->getMessage());
         $sendNotification->setHeading($sendEvent->getHeading());
 
-        $response = $this->notificationApi->sendNotification(
-            $playerID,
-            $sendNotification
-        );
 
-        $event->setChannel('notification', $notification->getId());
+        $response = $this->auraPushService->sendPush($cid, $sendNotification);
+
+
+            // $response = $this->notificationApi->sendNotification(
+            //     $playerID,
+            //     $sendNotification
+            // );
+
+            $event->setChannel('notification', $notification->getId());
 
         // If for some reason the call failed, tell mautic to try again by return false
-        if (200 !== $response->code) {
+        if (200 !== $response) {
             return $event->setResult(false);
         }
 

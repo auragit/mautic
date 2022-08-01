@@ -11,6 +11,7 @@ return [
                     'mautic.notification.api',
                     'event_dispatcher',
                     'mautic.lead.model.dnc',
+                    'mautic.notification.aura.serivce'
                 ],
             ],
             'mautic.notification.campaignbundle.condition_subscriber' => [
@@ -123,6 +124,14 @@ return [
                     'mautic.helper.integration',
                 ],
                 'alias' => 'notification_api',
+            ],
+            'mautic.notification.aura.serivce' => [
+                'class' => \Mautic\NotificationBundle\Service\AuraPushService::class,
+                'arguments' => [
+                    'mautic.http.client',
+                    'mautic.helper.integration',
+                    'monolog.logger.mautic',
+                ]
             ],
         ],
         'models' => [
@@ -286,5 +295,6 @@ return [
         'campaign_notification_email_addresses'       => null,
         'webhook_send_notification_to_author'         => true,
         'webhook_notification_email_addresses'        => null,
+        'send_push_endpoint'                          => null,
     ],
 ];

@@ -48,6 +48,17 @@ class ConfigAuthType extends AbstractType
                 'class' => 'form-control',
             ],
         ]);
+
+        $builder->add('unsubscribedMessage', TextType::class, [
+            'label' => 'sms-gateway.keys.unsubscribed-message',
+            'label_attr' => ['class' => 'control-label'],
+            'required' => false,
+            'attr' => [
+                'class' => 'form-control',
+            ],
+        ]);
+
+        
     }
 
     public function configureOptions(OptionsResolver $resolver): void

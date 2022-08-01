@@ -36,6 +36,7 @@ return [
                 'arguments' => [
                     'mautic.lead.model.dnc',
                     'mautic.mautickavenegar.configuration',
+                    'mautickavenegar.service'
                 ],
             ],
             'mautic_integration.mautickavenegar.service.sms.subscriber.timeline' => [

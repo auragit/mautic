@@ -40,6 +40,12 @@ class Configuration
      */
     private $unsubscribeRegexPattern;
 
+
+    /**
+     * @var string
+     */
+    private $unsubscribedMessage;
+
     public function __construct(IntegrationHelper $integrationHelper, EncryptionHelper $encryptionHelper)
     {
         $this->integrationHelper = $integrationHelper;
@@ -95,6 +101,17 @@ class Configuration
         return $this->unsubscribeRegexPattern;
     }
 
+        /**
+     * @return string
+     * 
+     * @throws SmsGatewayException
+     */
+    public function getUnsubscribedMessage(): string
+    {
+        $this->loadConfigurationIfNeeded();
+        
+        return $this->unsubscribedMessage;
+    }
 
     /**
      * @throws SmsGatewayException
@@ -119,6 +136,7 @@ class Configuration
         $this->apiKey = $keys['apiKey'];
         $this->fromNumber = $keys['fromNumber'];
         $this->unsubscribeRegexPattern = $keys['unsubscribeRegexPattern'];
+        $this->unsubscribedMessage = $keys['unsubscribedMessage'];
         $this->publicApiPath = $keys['publicApiPath'];
     }
 
