@@ -1767,7 +1767,7 @@ return [
         'translations_fetch_url'    => 'https://language-packs.mautic.com/',
         'stats_update_url'          => 'https://updates.mautic.org/stats/send', // set to empty in config file to disable
         'install_source'            => 'Mautic',
-        'system_update_url'         => 'https://api.github.com/repos/mautic/mautic/releases',
+        'system_update_url'         => null, //'https://api.github.com/repos/mautic/mautic/releases',
         'editor_fonts'              => [
             [
                 'name' => 'Arial',

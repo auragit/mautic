@@ -64,8 +64,8 @@ class ReplyCallback implements CallbackInterface
     public function getMessage(Request $request)
     {
         $this->validateRequest($request->request);
-
-        return trim($request->get('message'));
+        $msg = urldecode($request->get('message'));
+        return trim($msg);
     }
 
     private function validateRequest(ParameterBag $request)

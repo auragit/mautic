@@ -59,11 +59,17 @@ class StopSubscriber implements EventSubscriberInterface
 
             if (1 === preg_match("/$regex/", $msg)) {
 
-                // Unsubscribe the contact
-                $this->doNotContactModel->addDncForContact($event->getContact()->getId(), 'sms', DoNotContact::UNSUBSCRIBED);
+                /* unsubscribe if it's already contactable via sms. */
+                if ($this->doNotContactModel->isContactable($event->getContact(), 'sms') === DoNotContact::IS_CONTACTABLE) {
 
-                // send a sms to the contact and send unsubscribed message (e.g. your request is received.)
-                $this->messageService->sendSms($event->getContact()->getLeadPhoneNumber(), $this->configuration->getUnsubscribedMessage());
+                    // Unsubscribe the contact
+                    $this->doNotContactModel->addDncForContact($event->getContact()->getId(), 'sms', DoNotContact::UNSUBSCRIBED);
+
+                    // send a sms to the contact and send unsubscribed message (e.g. your request is received.)
+                    $this->messageService->sendSms($event->getContact()->getLeadPhoneNumber(), $this->configuration->getUnsubscribedMessage());
+                } else {
+                    echo "Already unsubscribed.";
+                }
             }
         }
     }
