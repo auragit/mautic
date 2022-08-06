@@ -74,7 +74,7 @@ class AuraPushService
             );
 
 
-            error_log($response->getBody()->getContents());
+//            error_log($response->getBody()->getContents());
 
             return $response->getStatusCode();
         } catch (Exception $e) {

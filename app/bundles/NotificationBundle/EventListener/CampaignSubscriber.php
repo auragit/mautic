@@ -192,16 +192,16 @@ class CampaignSubscriber implements EventSubscriberInterface
 
         $response = $this->auraPushService->sendPush($cid, $sendNotification);
 
+#        error_log("noti send response is ".$response);
+        // $response = $this->notificationApi->sendNotification(
+        //     $playerID,
+        //     $sendNotification
+        // );
 
-            // $response = $this->notificationApi->sendNotification(
-            //     $playerID,
-            //     $sendNotification
-            // );
-
-            $event->setChannel('notification', $notification->getId());
+        $event->setChannel('notification', $notification->getId());
 
         // If for some reason the call failed, tell mautic to try again by return false
-        if (200 !== $response) {
+        if (200 !== $response && 201 !== $response) {
             return $event->setResult(false);
         }
 
