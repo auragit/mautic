@@ -206,9 +206,9 @@ class BuildJsSubscriber implements EventSubscriberInterface
                 m.mergeUserDefinedIntoParams(event, params);
             }
             break;
-            case 'identify': {
-                m.mergeUserDefinedIntoParams(event, params);
-            }
+            // case 'identify': {
+            //     m.mergeUserDefinedIntoParams(event, params);
+            // }
             case 'logout': 
                 localStorage.removeItem("mtc_id");
                 localStorage.removeItem("mtc_sid");
