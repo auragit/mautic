@@ -196,6 +196,8 @@ JS;
 
     private function hasScript()
     {
+        return false; // hrv: because iran is blocked. we don't load onesignal scripts.
+
         $landingPage = true;
         $server      = $this->requestStack->getCurrentRequest()->server;
         $cookies     = $this->requestStack->getCurrentRequest()->cookies;

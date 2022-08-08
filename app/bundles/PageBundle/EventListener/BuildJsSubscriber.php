@@ -140,7 +140,7 @@ class BuildJsSubscriber implements EventSubscriberInterface
     }
 
     m.pageViewCounter = 0;
-    m.sendPageview = function(pageview) {
+    m.sendEvents = function(pageview) {
         var queue = [];
 
         if (!pageview) {
@@ -157,7 +157,32 @@ class BuildJsSubscriber implements EventSubscriberInterface
             for (var i=0; i<queue.length; i++) {
                 var event = queue[i];
 
-                var params = {
+                switch (event[0]) {
+                    case 'send':
+                        m.processSend(event)
+                        break
+                    default: 
+                        console.error('unhandled event:', event[0])
+                        continue
+                }
+            }
+        }
+    }
+
+    m.lastPageViewUrl = ''
+    m.processSend = function (event) {
+        const cmd = event[1]
+        let params = { _event: event[0], _cmd: cmd }
+
+        switch (cmd) {
+            case 'pageview': {
+
+                if (m.lastPageViewUrl === l.href) {
+                    return; //ignore reporting same url.
+                }
+                m.lastPageViewUrl = l.href;
+
+                const p = {
                     page_title: d.title,
                     page_language: n.language,
                     preferred_locale: (n.language).replace('-', '_'),
@@ -169,35 +194,55 @@ class BuildJsSubscriber implements EventSubscriberInterface
                     platform: m.getOs(),
                     do_not_track: navigator.doNotTrack == 1
                 };
-                
+
+                params = {...params, ...p};
+
                 if (window.Intl && window.Intl.DateTimeFormat) {
                     params.timezone =  new window.Intl.DateTimeFormat().resolvedOptions().timeZone;
                 }
-                
-                params = MauticJS.appendTrackedContact(params);
-                
-                // Merge user defined tracking pixel parameters.
-                if (typeof event[2] === 'object') {
-                    for (var attr in event[2]) {
-                        params[attr] = event[2][attr];
-                    }
-                }
 
-                m.deliverPageEvent(event, params);
-                
-                m.pageViewCounter++;
+                params = MauticJS.appendTrackedContact(params);
+
+                m.mergeUserDefinedIntoParams(event, params);
+            }
+            break;
+            case 'identify': {
+                m.mergeUserDefinedIntoParams(event, params);
+            }
+            case 'logout': 
+                localStorage.removeItem("mtc_id");
+                localStorage.removeItem("mtc_sid");
+                MauticJS.setCookie('mtc_id', null);
+                MauticJS.setCookie('mtc_sid', null);
+                MauticJS.setCookie('mautic_device_id', null);
+            break;
+            default:
+                console.error("unhandled command for send:", event[1])
+                return;
+        }
+
+        m.deliverPageEvent(event, params);
+        m.pageViewCounter++;
+    }
+
+    m.mergeUserDefinedIntoParams = function(event, params) {
+        // Merge user defined tracking pixel parameters.
+        if (typeof event[2] === 'object') {
+            for (var attr in event[2]) {
+                params[attr] = event[2][attr];
             }
         }
     }
 
     // Process pageviews after mtc.js loaded
-    m.sendPageview();
+    m.sendEvents();
 
     // Process pageviews after new are added
     document.addEventListener('eventAddedToMauticQueue', function(e) {
-      if (MauticJS.ensureEventContext(e, 'send', 'pageview')) {
-          m.sendPageview(e.detail);
-      }
+        // no need to ensure anything, we handle it on sending events method.
+        //   if (MauticJS.ensureEventContext(e, 'send', 'pageview')) {
+            m.sendEvents(e.detail);
+        //   }
     });
 })(MauticJS, location, navigator, document);
 JS;
@@ -488,7 +533,7 @@ JS;
         $lead   = $this->trackingHelper->getLead();
 
         if ($id = $this->trackingHelper->displayInitCode('google_analytics')) {
-            $gaUserId      = ($lead && $lead->getId()) ? 'ga(\'set\', \'userId\', '.$lead->getId().');' : '';
+            $gaUserId      = ($lead && $lead->getId()) ? 'ga(\'set\', \'userId\', ' . $lead->getId() . ');' : '';
             $gaAnonymizeIp = $this->trackingHelper->getAnonymizeIp() ? 'ga(\'set\', \'anonymizeIp\', true);' : '';
 
             $js .= <<<JS
@@ -517,7 +562,7 @@ JS;
                     'zp' => 'zipcode',
                 ];
                 foreach ($fieldsToMatch as $key => $fieldToMatch) {
-                    $par = 'get'.ucfirst($fieldToMatch);
+                    $par = 'get' . ucfirst($fieldToMatch);
                     if ($value = $lead->{$par}()) {
                         $customMatch[$key] = $value;
                     }

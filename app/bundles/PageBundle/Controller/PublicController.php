@@ -20,6 +20,7 @@ use Mautic\PageBundle\Model\Tracking404Model;
 use Mautic\PageBundle\Model\VideoModel;
 use Mautic\PageBundle\PageEvents;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -135,7 +136,7 @@ class PublicController extends CommonFormController
 
                     if (count($variants)) {
                         //check to see if this user has already been displayed a specific variant
-                        $variantCookie = $this->request->cookies->get('mautic_page_'.$entity->getId());
+                        $variantCookie = $this->request->cookies->get('mautic_page_' . $entity->getId());
 
                         if (!empty($variantCookie)) {
                             if (isset($variants[$variantCookie])) {
@@ -191,7 +192,7 @@ class PublicController extends CommonFormController
 
                             //set the cookie - 14 days
                             $this->get('mautic.helper.cookie')->setCookie(
-                                'mautic_page_'.$entity->getId(),
+                                'mautic_page_' . $entity->getId(),
                                 $useId,
                                 3600 * 24 * 14
                             );
@@ -244,7 +245,7 @@ class PublicController extends CommonFormController
                     $this->factory->getHelper('template.assets')->addCustomDeclaration($analytics);
                 }
 
-                $logicalName = $this->factory->getHelper('theme')->checkForTwigTemplate(':'.$template.':page.html.php');
+                $logicalName = $this->factory->getHelper('theme')->checkForTwigTemplate(':' . $template . ':page.html.php');
 
                 $response = $this->render(
                     $logicalName,
@@ -260,7 +261,7 @@ class PublicController extends CommonFormController
                 $content = $response->getContent();
             } else {
                 if (!empty($analytics)) {
-                    $content = str_replace('</head>', $analytics."\n</head>", $content);
+                    $content = str_replace('</head>', $analytics . "\n</head>", $content);
                 }
                 if ($entity->getNoIndex()) {
                     $content = str_replace('</head>', "<meta name=\"robots\" content=\"noindex\">\n</head>", $content);
@@ -326,7 +327,7 @@ class PublicController extends CommonFormController
                 $this->factory->getHelper('template.assets')->addCustomDeclaration($analytics);
             }
 
-            $logicalName = $this->factory->getHelper('theme')->checkForTwigTemplate(':'.$template.':page.html.php');
+            $logicalName = $this->factory->getHelper('theme')->checkForTwigTemplate(':' . $template . ':page.html.php');
 
             $response = $this->render(
                 $logicalName,
@@ -341,7 +342,7 @@ class PublicController extends CommonFormController
 
             $content = $response->getContent();
         } else {
-            $content = str_replace('</head>', $analytics.$this->renderView('MauticPageBundle:Page:preview_header.html.php')."\n</head>", $content);
+            $content = str_replace('</head>', $analytics . $this->renderView('MauticPageBundle:Page:preview_header.html.php') . "\n</head>", $content);
         }
 
         $dispatcher = $this->get('event_dispatcher');
@@ -383,6 +384,26 @@ class PublicController extends CommonFormController
         if (!$this->get('mautic.security')->isAnonymous()) {
             return $notSuccessResponse;
         }
+
+        
+        // process logout command: erase cookies.
+        if ('send' === $request->get('_event') && 'logout' === $request->get('_cmd')) {
+            // $logger = $this->container->get('monolog.logger.mautic');
+            // $logger->addDebug('event is'.$request->get('_event'));
+
+            $response = new JsonResponse(
+                [
+                    'success'   => 1
+                ]
+            );
+
+            $response->headers->setCookie(new Cookie('mtc_sid', null));
+            $response->headers->setCookie(new Cookie('mtc_id', null));
+            $response->headers->setCookie(new Cookie('mautic_device_id', null));
+
+            return $response;
+        }
+
 
         /** @var \Mautic\PageBundle\Model\PageModel $model */
         $model = $this->getModel('page');
@@ -433,16 +454,16 @@ class PublicController extends CommonFormController
     {
         $logger = $this->container->get('monolog.logger.mautic');
 
-        $logger->debug('Attempting to load redirect with tracking_id of: '.$redirectId);
+        $logger->debug('Attempting to load redirect with tracking_id of: ' . $redirectId);
 
         /** @var \Mautic\PageBundle\Model\RedirectModel $redirectModel */
         $redirectModel = $this->getModel('page.redirect');
         $redirect      = $redirectModel->getRedirectById($redirectId);
 
-        $logger->debug('Executing Redirect: '.$redirect);
+        $logger->debug('Executing Redirect: ' . $redirect);
 
         if (null === $redirect || !$redirect->isPublished(false)) {
-            $logger->debug('Redirect with tracking_id of '.$redirectId.' not found');
+            $logger->debug('Redirect with tracking_id of ' . $redirectId . ' not found');
 
             $url = ($redirect) ? $redirect->getUrl() : 'n/a';
 
@@ -500,7 +521,7 @@ class PublicController extends CommonFormController
             }
 
             if (false !== strpos($url, $this->generateUrl('mautic_asset_download'))) {
-                $url .= '?ct='.$ct;
+                $url .= '?ct=' . $ct;
             }
         }
 

@@ -17,7 +17,6 @@ use Mautic\LeadBundle\Tracker\Service\ContactTrackingService\ContactTrackingServ
 use Monolog\Logger;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
-
 class ContactTracker
 {
     use DefaultValueTrait;
@@ -121,7 +120,7 @@ class ContactTracker
             return null;
         }
 
-        if (empty($this->trackedContact)) {
+        if (empty($this->trackedContact)) { 
             $this->trackedContact = $this->getCurrentContact();
             $this->generateTrackingCookies();
         }
@@ -157,6 +156,16 @@ class ContactTracker
         $previouslyTrackedContact = (is_null($this->trackedContact)) ? null : $this->trackedContact;
         $previouslyTrackedId      = $this->getTrackingId();
 
+        $oldLead = $this->getContactByTrackedDevice();
+
+        // $this->logger->addDebug("KOS: oldlead".$oldLead->getId());
+        // $this->logger->addDebug("KOS: newlead".$trackedContact->getId());
+
+        if ($oldLead && $oldLead->getId() != $trackedContact->getId()) {
+            $this->logger->addDebug("CONTACT: Will prepare to merge {$oldLead->getId()} into {$trackedContact->getId()}");
+            $this->prepareForMerge($oldLead, $trackedContact);
+        }
+        
         // Set the newly tracked contact
         $this->trackedContact = $trackedContact;
 
@@ -169,6 +178,7 @@ class ContactTracker
         // Set last active
         $this->trackedContact->setLastActive(new \DateTime());
 
+
         // If for whatever reason this contact has not been saved yet, don't generate tracking cookies
         if (!$trackedContact->getId()) {
             // Delete existing cookies to prevent tracking as someone else
@@ -179,10 +189,18 @@ class ContactTracker
 
         // Generate cookies for the newly tracked contact
         $this->generateTrackingCookies();
-
+        
         if ($previouslyTrackedContact && $previouslyTrackedContact->getId() != $this->trackedContact->getId()) {
             $this->dispatchContactChangeEvent($previouslyTrackedContact, $previouslyTrackedId);
         }
+    }
+
+    private function prepareForMerge($oldLead, $newLead) {
+        //hrv. because when an anonymous contact is identified, mautic does not merge the events for contact when it was anonyoumous to the identified contact.
+        // here i am setting the hash for the old contact, so on the next deduplicate run, contacts are merged.
+        $hash = $newLead->getFieldValue("hash");
+        $oldLead->addUpdatedField('hash', $hash);
+        $this->leadRepository->saveEntity($oldLead);
     }
 
     /**
