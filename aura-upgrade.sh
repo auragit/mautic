@@ -27,7 +27,7 @@ cp /var/www/html~/app/config/local*.php /var/www/html/app/config
 
 echo "setting ownership permissions"
 # set ownership permission on all directories
-chown -R www-data:www-data .
+chown -R www-data:www-data /var/www/html
 
 echo "removing cache on the new instance"
 # remove cache (might have been corrupted during the execution of this script)
